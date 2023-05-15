@@ -9,3 +9,5 @@ as it contains secrets
 to the compose file. 
 - For setup of the webhook flask service, as well as kafka, refer to the kafka/kafka_readme.md
 - The ports in the compose files have to be open, if the plan is to reach them in a network. In this example, the ports were reachable inside a university VPN
+- For adding novel services for data extraction, simply create new Hop pipelines, based on the structure of the webhook payload
+- In Metabase, it is necessary to add the webhook_data_warehouse as a source. This can be done with referencing the docker address of it, which consists of the name of the service and the port
