@@ -1,0 +1,78 @@
+version: "3.5"
+
+services:
+
+  zookeeper:
+    image: zookeeper:3.8.0
+    container_name: 'zookeeper'
+    restart: unless-stopped
+    environment:
+      - ZOO_MY_ID=1
+      - ZOO_PORT=2181
+      - ZOOKEEPER_SASL_ENABLED=false
+    ports:
+      - '2181:2181'
+    networks:
+      - intern
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+  
+  kafka:
+    image: confluentinc/cp-kafka:6.2.7
+    container_name: 'kafka'
+    restart: unless-stopped
+    depends_on:
+      - zookeeper
+    ports:
+      - '9102:9102'
+      - '9092:9092'
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ZOOKEEPER_SASL_ENABLED=false
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,SASL_PLAINTEXT://kafka:9102
+      - KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL=PLAIN
+      - KAFKA_SECURITY_INTER_BROKER_PROTOCOL=SASL_PLAINTEXT
+      - KAFKA_SASL_ENABLED_MECHANISMS=PLAIN
+      - KAFKA_OPTS=-Djava.security.auth.login.config=/etc/kafka/kafka_server_jaas.conf
+      - KAFKA_LOG4J_LOGGERS="kafka.controller=TRACE,kafka.request.logger=DEBUG"
+    volumes:
+      - './config:/etc/kafka'
+    networks:
+      - intern
+      - etl-webhook-network
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+  webhook_receiver:
+    container_name: "webhook_receiver"
+    build: ./webhook/
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    depends_on:
+      - kafka
+    volumes:
+      - './volumes/endpoint:/code/logs'
+    networks:
+      intern:      
+      kafka_jira_webhook:
+        ipv4_address: 172.22.0.10
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
+networks:
+  intern:
+  kafka_jira_webhook:
+    external:
+      name: kafka_jira_webhook
+  etl-webhook-network:
+    external:
+      name: etl-webhook-network

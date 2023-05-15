@@ -1,0 +1,44 @@
+version: "3.5"
+
+services:
+  
+  hop_server:
+    container_name: "hop_server"
+    image: apache/hop
+    ports:
+      - "9107:9107"
+    volumes:
+      - ./volumes/hop-data:/files
+    environment:
+      - "HOP_SERVER_USER=hopuser"
+      - "HOP_SERVER_PASS=hoppassword"
+      - "HOP_SERVER_PORT=9107"
+      - "HOP_SERVER_HOSTNAME=0.0.0.0"
+      - "HOP_PROJECT_NAME=project"
+      - "HOP_PROJECT_FOLDER=/files/projects/project"
+    networks:
+      - internal
+      - etl-webhook-network
+    deploy:
+      resources:
+        limits:
+          memory: 1512M
+  webhook_data_warehouse:
+    container_name: webhook_data_warehouse
+    image: postgres
+    ports:
+     - "9106:5432"
+    volumes:
+      - ./volumes/database-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=data_warehouse
+      - POSTGRES_USER=postgresuser
+      - POSTGRES_PASSWORD=postgrespassword
+    networks:
+      etl-webhook-network:
+      internal:
+networks:
+  internal:
+  etl-webhook-network:
+    external:
+      name: etl-webhook-network

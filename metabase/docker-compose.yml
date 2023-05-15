@@ -1,0 +1,40 @@
+version: '3.5'
+
+services:
+  metabase:
+    image: metabase/metabase
+    container_name: metabase
+    ports:
+      - 9106:3000
+    environment:
+      - MB_DB_TYPE=postgres
+      - MB_DB_DBNAME=metabasedb
+      - MB_DB_PORT=5432
+      - MB_DB_USER=metabase
+      - MB_DB_PASS=metabase
+      - MB_DB_HOST=metabase-db
+    networks:
+      - etl-webhook-network
+      - internal
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+  metabase-db:
+    image: postgres:14-alpine
+    container_name: metabase-db
+    volumes:
+      - ./volumes/metabasedb:/var/lib/postgresql/data
+    ports:
+      - 54377:5432
+    environment:
+      - POSTGRES_DB=metabasedb
+      - POSTGRES_USER=metabase
+      - POSTGRES_PASSWORD=metabase
+    networks:
+      - internal
+networks:
+  internal:
+  etl-webhook-network:
+    external:
+      name: etl-webhook-network
