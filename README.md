@@ -1,4 +1,3 @@
-# ola-realtime-stack
 In order to run this stack, docker has to be installed, as well as docker compose.
 In every directory, run "docker-compose up -d". This starts up the docker containers
 associated with the stack. Following prequisites have to be fullfilled in order to deploy the stack:
