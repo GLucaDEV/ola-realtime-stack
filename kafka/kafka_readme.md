@@ -30,21 +30,19 @@ The address of the endpoint is: "webhook_receiver:5000/webhook" (inside Docker n
 
 ## What else needs to be customized?
 
-- Since Kafka should be reachable in the VPN, the left port at 9093:9093
+- Since Kafka should be reachable in the VPN, the left port at 9102:9102
   has to be changed to the port that is available.
 
 - So that Kafka can also be addressed within the VPN, must:
     - The address localhost:9093 in the docker-compose.yml under the Environment Variables of Kafka, more precisely.
-      "KAFKA_CFG_ADVERTISED_LISTENERS=CLIENT://kafka:9092,EXTERNAL://<localhost:9093>"
+      "KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,SASL_PLAINTEXT://<localhost:9102>"
       must be replaced by the address that makes Kafka accessible to the outside world and the port.
-    - For the environment variable "KAFKA_CFG_LISTENERS" instead of "EXTERNAL://:9093".
-      "EXTERNAL://0.0.0.0:<9093>" should be adjusted with the respective port listening to the outside.
 
 ## How to authenticate with a client?
 
 - Via Python Kafka Lib:
   - In the producer/consumer add the following parameters:
-    - bootstrap_servers=['kafka:9102'] # has to be changed to an actual server
+    - bootstrap_servers=['kafka:9102'] # has to be changed to an actual server address
     - security_protocol='SASL_PLAINTEXT'
     - sasl_plain_username=<is in config/kafka_server_jaas.conf under username>
     - sasl_plain_password=<is in config/kafka_server_jaas.conf under password>

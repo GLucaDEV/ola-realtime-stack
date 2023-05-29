@@ -12,12 +12,12 @@ KEYSTORE_SIGN_REQUEST="cert-file"
 KEYSTORE_SIGN_REQUEST_SRL="ca-cert.srl"
 KEYSTORE_SIGNED_CERT="cert-signed"
 
-COUNTRY="DE"
-STATE="Hamburg"
-OU="ART"
+COUNTRY="XX"
+STATE="Fantasystate"
+OU="FS"
 CN=`hostname -f`
-LOCATION="Hamburg"
-PASS="GjocK43mSg4P"
+LOCATION="Fantasy"
+PASS="goodpassword"
 
 function file_exists_and_exit() {
   echo "'$1' cannot exist. Move or delete it before"

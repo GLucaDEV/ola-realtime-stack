@@ -3,7 +3,7 @@ version: "3.5"
 services:
 
   zookeeper:
-    image: zookeeper:3.8.0
+    image: zookeeper:latest
     container_name: 'zookeeper'
     restart: unless-stopped
     environment:
@@ -20,7 +20,7 @@ services:
           memory: 512M
   
   kafka:
-    image: confluentinc/cp-kafka:6.2.7
+    image: confluentinc/cp-kafka:latest
     container_name: 'kafka'
     restart: unless-stopped
     depends_on:
@@ -57,12 +57,9 @@ services:
       - "5000:5000"
     depends_on:
       - kafka
-    volumes:
-      - './volumes/endpoint:/code/logs'
     networks:
       intern:      
       kafka_jira_webhook:
-        ipv4_address: 172.22.0.10
     deploy:
       resources:
         limits:
